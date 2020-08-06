@@ -26,6 +26,13 @@ class Watcher {
   public async watch(): Promise<void> {
     let server: cp.ChildProcess | undefined
     const restartServer = (): void => {
+      // Set this to manually control the restart (for example with `pkill -f
+      // -SIGUSR1 entry.js`). This can be useful if you're running code-server
+      // from source to modify code-server and don't want everything to
+      // disconnect every time you make a change.
+      if (server && process.env.NO_AUTO_RESTART === "true") {
+        return
+      }
       if (server) {
         server.kill()
       }
